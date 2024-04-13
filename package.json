@@ -14,8 +14,16 @@
   "contributes": {
     "commands": [
       {
-        "command": "run-qunit.helloWorld",
-        "title": "Hello World"
+        "command": "run-qunit.runaction",
+        "title": "execute action.ts"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "run-qunit.runaction",
+        "key": "ctrl+alt+b",
+        "mac": "cmd+shift+r",
+        "when": "editorTextFocus"
       }
     ]
   },
