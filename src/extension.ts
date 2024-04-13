@@ -28,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(disposable);
 	// 在当前活动的编辑器中添加图标
-	
+
 	// 在命令注册时调用该函数
 	disposable = vscode.commands.registerCommand('run-qunit.runaction', () => {
 		let editor = vscode.window.activeTextEditor;
@@ -56,36 +56,27 @@ export function activate(context: vscode.ExtensionContext) {
 				}
 				let funcEnd = value.indexOf("(assert: Assert)");
 				if (funcEnd != -1) {
-					return value.substring(funcIndex + "export function test_".length, funcEnd );
+					return value.substring(funcIndex + "export function test_".length, funcEnd);
 				}
 			}
 			let funcName;
-			while (startLine > 0 || endLine <= max) {
-				if (startLine > 0) {
-					funcName = getFuncName(startLine);
-					if (funcName) {
-						break;
-					}
-					if (startLine == endLine) {
-						endLine++;
-					}
-					startLine--;
+			while (startLine > 0) {
+				let text = document.lineAt(startLine)?.text
+				if (text == "}") {
+					startLine = 0;
 				}
-				if (endLine < max) {
-					let text = document.lineAt(endLine)?.text
-					if (text == '}') {
-						endLine = max;
-						continue;
-					}
-					funcName = getFuncName(endLine);
-					if (funcName) {
-						break;
-					}
-					endLine++;
+				funcName = getFuncName(startLine);
+				if (funcName) {
+					break;
 				}
+				startLine--;
 			}
-
-			let url = `http://127.0.0.1:8080/test/${urlPath}?filter=${funcName}`;
+			let url;
+			if (funcName != null) {
+				url = `http://127.0.0.1:8080/test/${urlPath}?filter=${funcName}`;
+			} else {
+				url = `http://127.0.0.1:8080/test/${urlPath}`;
+			}
 			vscode.env.openExternal(vscode.Uri.parse(url));
 		}
 
